@@ -10,11 +10,19 @@
 #include <pthread.h>
 
 #include "threadpool.h"
+#include "queue.h"
 
 // _threadpool is the internal threadpool structure that is
 // cast to type "threadpool" before it given out to callers
 typedef struct _threadpool_st {
    // you should fill in this structure with whatever you need
+
+   // TODO: add task queue
+   // TODO: add mutex
+   // TODO: add condition variable
+   // TODO: add array for threads
+   // TODO: add flag
+
 } _threadpool;
 
 threadpool create_threadpool(int num_threads_in_pool) {

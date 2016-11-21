@@ -31,3 +31,8 @@
 # Debug files
 *.dSYM/
 *.su
+
+
+# Src files
+server/
+mt_server.tar.gz

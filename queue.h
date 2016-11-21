@@ -4,6 +4,7 @@ typedef struct _node_st {
 
 	struct _node_st* nextNode;
 	void* taskFunction;
+	void* taskArgs;
 
 } _node;
 
@@ -22,3 +23,5 @@ int queue_empty(_queue*);
 void enqueue(_queue*, _node*);
 
 _node* dequeue(_queue*);
+
+int get_size(_queue*);

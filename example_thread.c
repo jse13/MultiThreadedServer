@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <errno.h>
 
+#include "queue.h"
 extern int errno;
 
 pthread_mutex_t   mutex;

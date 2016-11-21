@@ -61,3 +61,5 @@ _node* dequeue(_queue* q) {
 	return nodeToReturn;
 
 }
+
+int get_size(_queue* q) { return q->sizeOfQueue; }

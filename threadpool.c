@@ -17,11 +17,18 @@
 typedef struct _threadpool_st {
    // you should fill in this structure with whatever you need
 
-   // TODO: add task queue
+   // add task queue
+   _queue* taskQueue;
    // TODO: add mutex
+   pthread_mutex_t poolMutex;
    // TODO: add condition variable
+   pthread_cond_t poolCondVar;
    // TODO: add array for threads
+   pthread_t* arrayOfThreads;
+   // number of threads
+   int numberOfActiveThreads;
    // TODO: add flag
+   int poolShutdownFlag;
 
 } _threadpool;
 
@@ -39,6 +46,12 @@ threadpool create_threadpool(int num_threads_in_pool) {
   }
 
   // add your code here to initialize the newly created threadpool
+  init_queue(pool->taskQueue);
+  pthread_mutex_init(&pool->poolMutex, NULL);
+  pthread_cond_init(&pool->poolCondVar, NULL);
+  pool->arrayOfThreads = malloc(sizeof(pthread_t) * MAXT_IN_POOL);
+  pool->numberOfActiveThreads = 0;
+  pool->poolShutdownFlag = 0;
 
   return (threadpool) pool;
 }

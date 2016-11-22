@@ -53,4 +53,4 @@ void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,
  */
 void destroy_threadpool(threadpool destroyme);
 
-void thread_main(threadpool*);
+void* thread_main(void*);

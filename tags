@@ -1,0 +1,62 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AR	Makefile	/^AR = ar$/;"	m
+ARFLAGS	Makefile	/^ARFLAGS = ru$/;"	m
+CC	Makefile	/^CC=gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS= -g$/;"	m
+LIBS	Makefile	/^LIBS = -L.\/SocketLibrary\/$/;"	m
+MAXT_IN_POOL	threadpool.h	9;"	d
+NUM_LOOPS	server.c	151;"	d	file:
+RANLIB	Makefile	/^RANLIB = ranlib$/;"	m
+REQUEST_SIZE	common.h	8;"	d
+RESPONSE_SIZE	common.h	9;"	d
+SRCS	Makefile	/^SRCS= client.c server.c$/;"	m
+_node	queue.h	/^} _node;$/;"	t	typeref:struct:_node_st
+_node_st	queue.h	/^typedef struct _node_st {$/;"	s
+_queue	queue.h	/^} _queue;$/;"	t	typeref:struct:_queue_st
+_queue_st	queue.h	/^typedef struct _queue_st {$/;"	s
+_threadpool	threadpool.c	/^} _threadpool;$/;"	t	typeref:struct:_threadpool_st	file:
+_threadpool_st	threadpool.c	/^typedef struct _threadpool_st {$/;"	s	file:
+arrayOfThreads	threadpool.c	/^   pthread_t* arrayOfThreads;$/;"	m	struct:_threadpool_st	file:
+condvar	example_thread.c	/^pthread_cond_t    condvar;$/;"	v
+correct_read	common.c	/^int correct_read(int s, char *data, int len)$/;"	f
+correct_write	common.c	/^int correct_write(int s, char *data, int len)$/;"	f
+create_threadpool	threadpool.c	/^threadpool create_threadpool(int num_threads_in_pool) {$/;"	f
+dequeue	queue.c	/^_node* dequeue(_queue* q) {$/;"	f
+destroy_threadpool	threadpool.c	/^void destroy_threadpool(threadpool destroyme) {$/;"	f
+dispatch	threadpool.c	/^void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,$/;"	f
+dispatch_fn	threadpool.h	/^typedef void (*dispatch_fn)(void *);$/;"	t
+dispatch_to_me	threadpool_test.c	/^void dispatch_to_me(void *arg) {$/;"	f
+do_pingpong	example_thread.c	/^void *do_pingpong(void *arg) {$/;"	f
+enqueue	queue.c	/^void enqueue(_queue* q, _node* n) {$/;"	f
+firstNode	queue.h	/^	_node* firstNode;$/;"	m	struct:_queue_st
+get_size	queue.c	/^int get_size(_queue* q) { return q->sizeOfQueue; }$/;"	f
+init_queue	queue.c	/^void init_queue(_queue* q) {$/;"	f
+lastNode	queue.h	/^	_node* lastNode;$/;"	m	struct:_queue_st
+main	client.c	/^int main(int argc, char **argv) {$/;"	f
+main	example_thread.c	/^int main(int argc, char **argv) {$/;"	f
+main	queue_test.c	/^int main() {$/;"	f
+main	server.c	/^int main(int argc, char **argv)$/;"	f
+main	threadpool_test.c	/^int main(int argc, char **argv) {$/;"	f
+mutex	example_thread.c	/^pthread_mutex_t   mutex;$/;"	v
+nextNode	queue.h	/^	struct _node_st* nextNode;$/;"	m	struct:_node_st	typeref:struct:_node_st::_node_st
+numberOfActiveThreads	threadpool.c	/^   int numberOfActiveThreads;$/;"	m	struct:_threadpool_st	file:
+poolCondVar	threadpool.c	/^   pthread_cond_t poolCondVar;$/;"	m	struct:_threadpool_st	file:
+poolMutex	threadpool.c	/^   pthread_mutex_t poolMutex;$/;"	m	struct:_threadpool_st	file:
+poolShutdownFlag	threadpool.c	/^   int poolShutdownFlag;$/;"	m	struct:_threadpool_st	file:
+process_request	server.c	/^char *process_request(char *request, int *response_length) {$/;"	f
+queue_empty	queue.c	/^int queue_empty(_queue* q) {$/;"	f
+read_request	server.c	/^char *read_request(int fd) {$/;"	f
+send_response	common.c	/^void  send_response(int fd, char *response, int response_length) {$/;"	f
+setup_listen	server.c	/^int setup_listen(char *socketNumber) {$/;"	f
+sizeOfQueue	queue.h	/^	int sizeOfQueue;$/;"	m	struct:_queue_st
+taskArgs	queue.h	/^	void* taskArgs;$/;"	m	struct:_node_st
+taskFunction	queue.h	/^	dispatch_fn taskFunction;$/;"	m	struct:_node_st
+taskQueue	threadpool.c	/^   _queue* taskQueue;$/;"	m	struct:_threadpool_st	file:
+thread_main	threadpool.c	/^void thread_main(threadpool* threadpool) {$/;"	f
+threadpool	threadpool.h	/^typedef void *threadpool;$/;"	t
+threads_left	example_thread.c	/^int               threads_left = 0;$/;"	v

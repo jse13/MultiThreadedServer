@@ -6,7 +6,7 @@ CFLAGS= -g
 SRCS= client.c server.c
 LIBS = -L./SocketLibrary/
 
-all:: socketlib client server example_thread threadpool_test
+all:: socketlib client server example_thread threadpool_test queue_test
 	strip client
 	strip server
 	strip example_thread

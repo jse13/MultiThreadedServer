@@ -2,15 +2,25 @@
 #include <stdlib.h>
 #include "queue.h"
 
+#define QUEUE_DEBUG 1
+
 void init_queue(_queue* q) {
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDo: Initialize queue.\n");
 
 	q->lastNode = 0;
 	q->firstNode = 0;
 	q->sizeOfQueue = 0;
 
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDone: Initialized queue.\n");
 }
 
 int queue_empty(_queue* q) {
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDo: empty queue.\n");
 
 	if(q->sizeOfQueue == 0) {
 		return 0;
@@ -26,9 +36,15 @@ int queue_empty(_queue* q) {
 		currentQueueItem = nextQueueItem;
 
 	}
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDone: emptied queue.\n");
 }
 
 void enqueue(_queue* q, _node* n) {
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDo: Enqueue node.\n");
 
 	if(q->sizeOfQueue != 0) {
 		_node* previousFirstNode = q->firstNode;
@@ -39,24 +55,45 @@ void enqueue(_queue* q, _node* n) {
 	}
 	else {
 		//Special case if no items are in queue
+		if(QUEUE_DEBUG)
+			fprintf(stderr, "Info: Enqueue special case.\n");
 		q->firstNode = n;
 		q->lastNode = n;
 		q->sizeOfQueue++;
 	}
 
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDone: Enqueued node.\n");
 }
 
 _node* dequeue(_queue* q) {
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDo: Dequeue node.\n");
 
 	_node* nodeToReturn = q->lastNode;
 
 	//Get the second-to-last node
 	_node* walkThroughNode = q->firstNode;
-	while(walkThroughNode->nextNode != q->lastNode)
-		walkThroughNode = walkThroughNode->nextNode;
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tInfo: walking to second to last node.\n");
+	if(q->sizeOfQueue == 2) {
+		walkThroughNode = q->firstNode;
+	}
+	else {
+		int i;
+		for(i = 0; i < (q->sizeOfQueue) - 1; i++)
+			walkThroughNode = walkThroughNode->nextNode;
+	}
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tInfo: found second to last node.\n");
 
 	q->lastNode = walkThroughNode;
 	q->sizeOfQueue--;
+
+	if(QUEUE_DEBUG)
+		fprintf(stderr, "\tDone: Dequeued node.\n");
 
 	return nodeToReturn;
 

@@ -1,0 +1,85 @@
+	Do: Initializing the threadpool.
+	Do: Initialize queue.
+	Done: Initialized queue.
+	Done: initialized the threadpool.
+	Do: Sending allocated threads to thread_main().
+	Info: A thread entered thread_main().
+	Info: A thread is waiting.
+	Done: sent threads to thread_main().
+	Info: A thread entered thread_main().
+	Info: A thread is waiting.
+	Do: Dispatching thread 3.
+	Do: Allocating new task node.
+	Done: allocated new task node.
+	Do: Enqueue node.
+	Done: Enqueued node.
+	Done: dispatched thread.
+	Info: A thread is doing a job.
+	Do: Dispatching thread 6.
+	Do: Allocating new task node.
+	Done: allocated new task node.
+	Info: Size of queue is 1.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Do: Enqueue node.
+	Done: Enqueued node.
+	Done: dispatched thread.
+	Info: A thread is doing a job.
+	Do: Dispatching thread 7.
+	Do: Allocating new task node.
+	Info: Size of queue is 1.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Done: allocated new task node.
+	Do: Enqueue node.
+	Done: Enqueued node.
+	Done: dispatched thread.
+	Info: A thread is doing a job.
+	Info: Size of queue is 1.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Info: A thread is waiting.
+	Info: A thread is waiting.
+	Do: Dispatching thread 3.
+	Do: Allocating new task node.
+	Done: allocated new task node.
+	Do: Enqueue node.
+	Done: Enqueued node.
+	Done: dispatched thread.
+	Info: A thread is doing a job.
+	Info: Size of queue is 1.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Do: Dispatching thread 6.
+	Do: Allocating new task node.
+	Done: allocated new task node.
+	Do: Enqueue node.
+	Done: Enqueued node.
+	Done: dispatched thread.
+	Do: Dispatching thread 7.
+	Do: Allocating new task node.
+	Done: allocated new task node.
+	Do: Enqueue node.
+	Done: dispatched thread.
+	Info: A thread is doing a job.
+	Info: Size of queue is 2.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Info: A thread is doing a job.
+	Info: Size of queue is 1.
+	Do: Dequeue node.
+	Info: walking to second to last node.
+	Info: found second to last node.
+	Done: Dequeued node.
+	Info: A thread is waiting.
+	Info: A thread is waiting.

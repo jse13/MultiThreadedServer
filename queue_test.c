@@ -20,6 +20,9 @@ int main() {
 		enqueue(testQueue, nodeToPush);
 
 	}
+	nodeToPush = dequeue(testQueue);
+
+	printf("Dequeued %d", (int) nodeToPush->taskFunction);
 
 	queue_empty(testQueue);
 	free(testQueue);

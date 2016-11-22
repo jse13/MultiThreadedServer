@@ -12,6 +12,8 @@
 #include "threadpool.h"
 #include "queue.h"
 
+#define TPOOL_DEBUG 0
+
 // _threadpool is the internal threadpool structure that is
 // cast to type "threadpool" before it given out to callers
 typedef struct _threadpool_st {
@@ -19,15 +21,15 @@ typedef struct _threadpool_st {
 
    // add task queue
    _queue* taskQueue;
-   // TODO: add mutex
+   // add mutex
    pthread_mutex_t poolMutex;
-   // TODO: add condition variable
+   // add condition variable
    pthread_cond_t poolCondVar;
-   // TODO: add array for threads
+   // add array for threads
    pthread_t* arrayOfThreads;
    // number of threads
    int numberOfActiveThreads;
-   // TODO: add flag
+   // add flag
    int poolShutdownFlag;
 
 } _threadpool;
@@ -45,15 +47,36 @@ threadpool create_threadpool(int num_threads_in_pool) {
     return NULL;
   }
 
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Initializing the threadpool.\n");
+
   // add your code here to initialize the newly created threadpool
+  pool->numberOfActiveThreads = num_threads_in_pool;
+
+  pool->taskQueue = malloc(sizeof(_queue));
   init_queue(pool->taskQueue);
+
   pthread_mutex_init(&pool->poolMutex, NULL);
   pthread_cond_init(&pool->poolCondVar, NULL);
-  pool->arrayOfThreads = malloc(sizeof(pthread_t) * MAXT_IN_POOL);
-  pool->numberOfActiveThreads = 0;
+
+  pool->arrayOfThreads = malloc(sizeof(pthread_t) 
+      * pool->numberOfActiveThreads);
+
   pool->poolShutdownFlag = 0;
 
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: initialized the threadpool.\n"
+                    "\tDo: Sending allocated threads to thread_main().\n");
+
   // Start initializing all the threads via thread_main()
+  int i;
+  for(i = 0; i < pool->numberOfActiveThreads; i++) {
+          pthread_create(&pool->arrayOfThreads[i], NULL, thread_main, 
+              (void*) pool);
+  }
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: sent threads to thread_main().\n");
 
   return (threadpool) pool;
 }
@@ -62,52 +85,124 @@ threadpool create_threadpool(int num_threads_in_pool) {
 void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,
 	      void *arg) {
   _threadpool *pool = (_threadpool *) from_me;
+  
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Dispatching thread %ld.\n", (long) arg);
+  
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Allocating new task node.\n");
 
   // add your code here to dispatch a thread
-  // TODO: allocate a new task
-  // TODO: lock the mutex
-  // TODO: add the node to the task queue
-  // TODO: signal the condition variable
-  // TODO: release the mutex
+  // lock the mutex
+  pthread_mutex_lock(&pool->poolMutex);
+  // allocate a new task
+  _node* newTaskForQueue = malloc(sizeof(_node));
+  // set task
+  newTaskForQueue->taskFunction = dispatch_to_here;
+  // set args
+  newTaskForQueue->taskArgs = arg;
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: allocated new task node.\n");
+
+  // add the node to the task queue
+  enqueue(pool->taskQueue, newTaskForQueue);
+  // signal the condition variable
+  pthread_cond_signal(&pool->poolCondVar);
+  // release the mutex
+  pthread_mutex_unlock(&pool->poolMutex);
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: dispatched thread.\n");
 }
 
 void destroy_threadpool(threadpool destroyme) {
   _threadpool *pool = (_threadpool *) destroyme;
 
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Destroying threadpool.\n");
+ 
   // add your code here to kill a threadpool
-  // TODO: lock the mutex
-  // TODO: set the destroy flag
-  // TODO: broadcast the condition variable
-  // TODO: release mutex
-  // TODO: wait for all threads to exit
+  // lock the mutex
+  pthread_mutex_lock(&pool->poolMutex);
+  // set the destroy flag
+  pool->poolShutdownFlag = 1;
+  // broadcast the condition variable
+  pthread_cond_broadcast(&pool->poolCondVar);
+  // release mutex
+  pthread_mutex_unlock(&pool->poolMutex);
 
-  // TODO: kill task queue
-  // TODO: kill mutex
-  // TODO: kill cond var
-  // TODO: kill the array
+  // wait for all threads to exit
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Joining disparate threads.\n");
+
+  int i;
+  for(i = 0; i < pool->numberOfActiveThreads; i++) {
+    pthread_join(pool->arrayOfThreads[i], NULL);
+  }
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: joined all threads.\n");
+
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDo: Cleaning up dynamic threadpool allocations.\n");
+
+  // kill task queue
+  queue_empty(pool->taskQueue);
+  // kill mutex
+  pthread_mutex_destroy(&pool->poolMutex);
+  // kill cond var
+  pthread_cond_destroy(&pool->poolCondVar);
+  // kill the array
+  free(pool->arrayOfThreads);
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: cleaned up dynamic memory.\n");
+
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tDone: destroyed threadpool.\n");
 }
 
-void thread_main(threadpool* threadpool) {
+void* thread_main(void* threadpool) {
 
   _threadpool* pool = (_threadpool*) threadpool;
   _node* taskToDispatchTo;
   
+  if(TPOOL_DEBUG)
+    fprintf(stderr, "\tInfo: A thread entered thread_main().\n");
+
+
   for(;;) {
     // lock mutex
     pthread_mutex_lock(&pool->poolMutex);
 
-    // check task queue and shutdown signal
+    if(get_size(pool->taskQueue) == 0) {
+      // wait for condition variable when queue is empty
+      if(TPOOL_DEBUG)
+        fprintf(stderr, "\tInfo: A thread is waiting.\n");
+
+      pthread_cond_wait(&pool->poolCondVar, &pool->poolMutex);
+    }
+    
+    // check the shutdown signal
     if(pool->poolShutdownFlag == 1) {
-      // TODO: shutdown the thread
+      // shutdown the thread
+      if(TPOOL_DEBUG)
+        fprintf(stderr, "\tInfo: Exiting a thread.\n");
+      pthread_exit(NULL);
     }
-    else if(get_size(pool->taskQueue) == 0) {
-      // TODO: wait for condition variable when queue is empty
-    }
-    // TODO: dequeue a task
+
+    if(TPOOL_DEBUG)
+      fprintf(stderr, "\tInfo: A thread is doing a job.\n");
+
+    // dequeue a task
+    if(TPOOL_DEBUG)
+      fprintf(stderr, "\tInfo: Size of queue is %d.\n", get_size(pool->taskQueue));
     taskToDispatchTo = dequeue(pool->taskQueue);
-    (taskToDispatchTo->taskFunction) (taskToDispatchTo->taskArgs);
     // release mutex
     pthread_mutex_unlock(&pool->poolMutex);
-    // TODO: execute the task function
+    // execute the task function
+    (taskToDispatchTo->taskFunction) (taskToDispatchTo->taskArgs);
   }
 }

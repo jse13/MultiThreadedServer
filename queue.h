@@ -1,9 +1,10 @@
 //Barebones queue implementation using a primitive linked list
+#include "threadpool.h"
 
 typedef struct _node_st {
 
 	struct _node_st* nextNode;
-	void* taskFunction;
+	dispatch_fn taskFunction;
 	void* taskArgs;
 
 } _node;

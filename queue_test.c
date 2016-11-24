@@ -12,18 +12,42 @@ int main() {
 
 	_node* nodeToPush;
 
-	int i;
-	for(i = 0; i < 10; i++) {
+	long i;
 
-		nodeToPush = malloc(sizeof(_node));
-		nodeToPush->taskFunction = (void*) i;
-		enqueue(testQueue, nodeToPush);
 
-	}
+	printf("Enqueueing 1\n");
+	nodeToPush = malloc(sizeof(_node));
+	nodeToPush->taskFunction = (void*) 1;
+	enqueue(testQueue, nodeToPush);
+
+	printf("Enqueueing 3\n");
+	nodeToPush = malloc(sizeof(_node));
+	nodeToPush->taskFunction = (void*) 3;
+	enqueue(testQueue, nodeToPush);
+
+	printf("Enqueueing 7\n");
+	nodeToPush = malloc(sizeof(_node));
+	nodeToPush->taskFunction = (void*) 7;
+	enqueue(testQueue, nodeToPush);
+
+
+	printf("Full queue is size %d\n\n.", get_size(testQueue));
+
+
 	nodeToPush = dequeue(testQueue);
+	printf("Dequeued %d\n", (int) nodeToPush->taskFunction);
+	printf("Size is now %d\n\n.", get_size(testQueue));
 
-	printf("Dequeued %d", (int) nodeToPush->taskFunction);
+	nodeToPush = dequeue(testQueue);
+	printf("Dequeued %d\n", (int) nodeToPush->taskFunction);
+	printf("Size is now %d\n\n.", get_size(testQueue));
 
+	nodeToPush = dequeue(testQueue);
+	printf("Dequeued %d\n", (int) nodeToPush->taskFunction);
+	printf("Size is now %d\n\n.", get_size(testQueue));
+
+
+	printf("Size of queue is now %d\n\n", get_size(testQueue));
 	queue_empty(testQueue);
 	free(testQueue);
 

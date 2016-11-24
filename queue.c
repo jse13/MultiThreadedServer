@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "queue.h"
 
-#define QUEUE_DEBUG 1
+#define QUEUE_DEBUG 0
 
 void init_queue(_queue* q) {
 
@@ -39,6 +39,8 @@ int queue_empty(_queue* q) {
 
 	if(QUEUE_DEBUG)
 		fprintf(stderr, "\tDone: emptied queue.\n");
+
+	return 0;
 }
 
 void enqueue(_queue* q, _node* n) {
@@ -79,11 +81,21 @@ _node* dequeue(_queue* q) {
 	if(QUEUE_DEBUG)
 		fprintf(stderr, "\tInfo: walking to second to last node.\n");
 	if(q->sizeOfQueue == 2) {
-		walkThroughNode = q->firstNode;
+		nodeToReturn = q->lastNode;
+		q->lastNode = q->firstNode;
+		q->sizeOfQueue--;
+		return nodeToReturn;
+	}
+	else if(q->sizeOfQueue == 1) {
+		nodeToReturn = q->firstNode;
+		q->firstNode = NULL;
+		q->lastNode = NULL;
+		q->sizeOfQueue--;
+		return nodeToReturn;
 	}
 	else {
 		int i;
-		for(i = 0; i < (q->sizeOfQueue) - 1; i++)
+		for(i = 1; i < (q->sizeOfQueue) - 1; i++)
 			walkThroughNode = walkThroughNode->nextNode;
 	}
 	if(QUEUE_DEBUG)

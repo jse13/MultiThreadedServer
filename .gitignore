@@ -36,3 +36,6 @@
 # Src files
 server/
 mt_server.tar.gz
+
+# Excude project instructions
+*.pdf

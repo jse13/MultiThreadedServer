@@ -93,8 +93,6 @@ void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,
     fprintf(stderr, "\tDo: Allocating new task node.\n");
 
   // add your code here to dispatch a thread
-  // lock the mutex
-  pthread_mutex_lock(&pool->poolMutex);
   // allocate a new task
   _node* newTaskForQueue = malloc(sizeof(_node));
   // set task
@@ -105,12 +103,18 @@ void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,
   if(TPOOL_DEBUG)
     fprintf(stderr, "\tDone: allocated new task node.\n");
 
+  // lock the mutex
+  pthread_mutex_lock(&pool->poolMutex);
+
   // add the node to the task queue
   enqueue(pool->taskQueue, newTaskForQueue);
   // signal the condition variable
-  pthread_cond_signal(&pool->poolCondVar);
+ 
   // release the mutex
   pthread_mutex_unlock(&pool->poolMutex);
+ 
+
+  pthread_cond_signal(&pool->poolCondVar);
 
   if(TPOOL_DEBUG)
     fprintf(stderr, "\tDone: dispatched thread.\n");
@@ -163,6 +167,7 @@ void destroy_threadpool(threadpool destroyme) {
   if(TPOOL_DEBUG)
     fprintf(stderr, "\tDone: destroyed threadpool.\n");
 }
+
 
 void* thread_main(void* threadpool) {
 

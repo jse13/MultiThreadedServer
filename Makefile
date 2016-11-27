@@ -21,8 +21,8 @@ example_thread: example_thread.o
 client: client.o common.o
 	$(CC) -o client client.o common.o $(LIBS) -lsock -lpthread
 
-server: server.o common.o
-	$(CC) -o server server.o common.o $(LIBS) -lsock -lpthread
+server: server.o common.o threadpool.o queue.o
+	$(CC) -o server server.o common.o threadpool.o queue.o $(LIBS) -lsock -lpthread
 
 threadpool_test: threadpool_test.o threadpool.o queue.o
 	$(CC) -o threadpool_test threadpool_test.o threadpool.o queue.o -lpthread

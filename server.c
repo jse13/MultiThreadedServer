@@ -18,10 +18,14 @@
 
 #include "SocketLibrary/socklib.h"
 #include "common.h"
+#include "threadpool.h"
+
+#define SERV_DEBUG 0
 
 extern int errno;
 
 int   setup_listen(char *socketNumber);
+void  manage_request(int socket_talk);
 char *read_request(int fd);
 char *process_request(char *request, int *response_length);
 void  send_response(int fd, char *response, int response_length);
@@ -35,26 +39,30 @@ int main(int argc, char **argv)
 {
   char buf[1000];
   int  socket_listen;
-  int  socket_talk;
+  long socket_talk;
   int  dummy, len;
+  int  numThreads;
 
-  if (argc != 2)
+  if (argc != 3)
   {
-    fprintf(stderr, "(SERVER): Invoke as  './server socknum'\n");
-    fprintf(stderr, "(SERVER): for example, './server 4434'\n");
+    fprintf(stderr, "(SERVER): Invoke as  './server socknum numThreads'\n");
+    fprintf(stderr, "(SERVER): for example, './server 4434 4'\n");
     exit(-1);
   }
 
-  /* 
+  /*
    * Set up the 'listening socket'.  This establishes a network
    * IP_address:port_number that other programs can connect with.
    */
   socket_listen = setup_listen(argv[1]);
 
-  /* 
+  // Get number of threads
+  numThreads = atoi(argv[2]);
+
+  /*
    * Here's the main loop of our program.  Inside the loop, the
    * one thread in the server performs the following steps:
-   * 
+   *
    *  1) Wait on the socket for a new connection to arrive.  This
    *     is done using the "accept" library call.  The return value
    *     of "accept" is a file descriptor for a new data socket associated
@@ -71,9 +79,42 @@ int main(int argc, char **argv)
    *  5) Close the data socket associated with the connection
    */
 
+//  while(1) {
+//
+//
+//    char *request = NULL;
+//    char *response = NULL;
+//
+//    socket_talk = saccept(socket_listen);  // step 1
+//    if (socket_talk < 0) {
+//      fprintf(stderr, "An error occured in the server; a connection\n");
+//      fprintf(stderr, "failed because of ");
+//      perror("");
+//      exit(1);
+//    }
+//    request = read_request(socket_talk);  // step 2
+//    if (request != NULL) {
+//      int response_length;
+//
+//      response = process_request(request, &response_length);  // step 3
+//      if (response != NULL) {
+//	send_response(socket_talk, response, response_length);  // step 4
+//      }
+//    }
+//    close(socket_talk);  // step 5
+//
+//    // clean up allocated memory, if any
+//    if (request != NULL)
+//      free(request);
+//    if (response != NULL)
+//      free(response);
+//  }
+
+  // initialize threadpool
+  threadpool tp;
+  tp = create_threadpool(numThreads);
+
   while(1) {
-    char *request = NULL;
-    char *response = NULL;
 
     socket_talk = saccept(socket_listen);  // step 1
     if (socket_talk < 0) {
@@ -82,26 +123,50 @@ int main(int argc, char **argv)
       perror("");
       exit(1);
     }
-    request = read_request(socket_talk);  // step 2
-    if (request != NULL) {
-      int response_length;
+    if(SERV_DEBUG)
+      fprintf(stderr, "Server: Info: accepted connection.\n");
 
-      response = process_request(request, &response_length);  // step 3
-      if (response != NULL) {
-	send_response(socket_talk, response, response_length);  // step 4
-      }
-    }
-    close(socket_talk);  // step 5
+    // dispatch a thread to manage the request
+    dispatch(tp, (void*) manage_request, (void*) socket_talk);
 
-    // clean up allocated memory, if any
-    if (request != NULL)
-      free(request);
-    if (response != NULL)
-      free(response);
+    if(SERV_DEBUG)
+      fprintf(stderr, "Server: Info: dispatched thread.\n");
+
+    close(socket_talk);
   }
+
+  // clean up the thread stuff
+  destroy_threadpool(tp);
+
 }
 
+/**
+ * This is a helper function that threads will be dispatched to, that
+ * encapsulates the read-process request cycle.
+ */
+void manage_request(int socket_talk) {
+  char *request = NULL;
+  char *response = NULL;
 
+  if(SERV_DEBUG)
+    fprintf(stderr, "Server: Info: a thread entered manage_request().\n");
+
+  request = read_request(socket_talk);
+  if (request != NULL) {
+    int response_length;
+
+    response = process_request(request, &response_length);
+    if (response != NULL) {
+      send_response(socket_talk, response, response_length);
+    }
+  }
+
+  // clean up allocated memory, if any
+  if (request != NULL)
+    free(request);
+  if (response != NULL)
+    free(response);
+}
 
 /**
  * This function accepts a string of the form "5654", and opens up
@@ -129,12 +194,19 @@ char *read_request(int fd) {
   char *request = (char *) malloc(REQUEST_SIZE*sizeof(char));
   int   ret;
 
+  if(SERV_DEBUG)
+    fprintf(stderr, "Server: Info: a thread entered read_request().\n");
+
   if (request == NULL) {
     fprintf(stderr, "(SERVER): out of memory!\n");
     exit(-1);
   }
 
   ret = correct_read(fd, request, REQUEST_SIZE);
+
+  if(SERV_DEBUG)
+    fprintf(stderr, "Server: Info: received a request.\n");
+
   if (ret != REQUEST_SIZE) {
     free(request);
     request = NULL;
@@ -144,7 +216,7 @@ char *read_request(int fd) {
 
 /**
  * This function crunches on a request, returning a response.
- * This is where all of the hard work happens.  
+ * This is where all of the hard work happens.
  * This function is thread-safe.
  */
 
@@ -153,6 +225,9 @@ char *read_request(int fd) {
 char *process_request(char *request, int *response_length) {
   char *response = (char *) malloc(RESPONSE_SIZE*sizeof(char));
   int   i,j;
+
+  if(SERV_DEBUG)
+    fprintf(stderr, "Server: Info: processing request.\n");
 
   // just do some mindless character munging here
 
@@ -169,6 +244,7 @@ char *process_request(char *request, int *response_length) {
     }
   }
   *response_length = RESPONSE_SIZE;
+
   return response;
 }
 

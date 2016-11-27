@@ -87,7 +87,7 @@ void dispatch(threadpool from_me, dispatch_fn dispatch_to_here,
   _threadpool *pool = (_threadpool *) from_me;
   
   if(TPOOL_DEBUG)
-    fprintf(stderr, "\tDo: Dispatching thread %ld.\n", (long) arg);
+    fprintf(stderr, "\tDo: Dispatching thread.\n");
   
   if(TPOOL_DEBUG)
     fprintf(stderr, "\tDo: Allocating new task node.\n");
@@ -177,7 +177,7 @@ void* thread_main(void* threadpool) {
     // lock mutex
     pthread_mutex_lock(&pool->poolMutex);
 
-    if(get_size(pool->taskQueue) == 0) {
+    if(get_size(pool->taskQueue) <= 0) {
       // wait for condition variable when queue is empty
       if(TPOOL_DEBUG)
         fprintf(stderr, "\tInfo: A thread is waiting.\n");
@@ -199,6 +199,13 @@ void* thread_main(void* threadpool) {
     // dequeue a task
     if(TPOOL_DEBUG)
       fprintf(stderr, "\tInfo: Size of queue is %d.\n", get_size(pool->taskQueue));
+
+    //Note that because the mutex is given up when waiting, it's possible for
+    //the task queue to be empty here
+    if(get_size(pool->taskQueue) <= 0) {
+      pthread_mutex_unlock(&pool->poolMutex);
+      continue;
+    }
     taskToDispatchTo = dequeue(pool->taskQueue);
     // release mutex
     pthread_mutex_unlock(&pool->poolMutex);

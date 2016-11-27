@@ -93,6 +93,9 @@ _node* dequeue(_queue* q) {
 		q->sizeOfQueue--;
 		return nodeToReturn;
 	}
+	else if(q->sizeOfQueue == 0) {
+		return NULL;
+	}
 	else {
 		int i;
 		for(i = 1; i < (q->sizeOfQueue) - 1; i++)

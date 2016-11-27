@@ -6,7 +6,7 @@ CFLAGS= -g
 SRCS= client.c server.c
 LIBS = -L./SocketLibrary/
 
-all:: socketlib client server example_thread threadpool_test queue_test
+all:: socketlib client server example_thread threadpool_test 
 	strip client
 	strip server
 	strip example_thread
@@ -26,9 +26,6 @@ server: server.o common.o threadpool.o queue.o
 
 threadpool_test: threadpool_test.o threadpool.o queue.o
 	$(CC) -o threadpool_test threadpool_test.o threadpool.o queue.o -lpthread
-
-queue_test: queue.o queue_test.o
-	$(CC) -o queue_test queue.o queue_test.o
 
 client.o: client.c common.h
 	$(CC) -o client.o -c client.c
@@ -51,9 +48,6 @@ threadpool_test.o: threadpool_test.c threadpool.h
 queue.o: queue.c queue.h
 	$(CC) -o queue.o -c queue.c
 
-queue_test.o: queue_test.c queue.h
-	$(CC) -o queue_test.o -c queue_test.c
-
 clean:
-	/bin/rm -f client server example_thread threadpool_test queue_test *.o core *~ #*
+	/bin/rm -f client server example_thread threadpool_test *.o core *~ #*
 	cd SocketLibrary && make clean
